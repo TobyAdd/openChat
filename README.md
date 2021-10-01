@@ -1,7 +1,8 @@
 # openChat
+Simple chat coded by me.
 
 ![изображение](https://user-images.githubusercontent.com/66429886/135591337-9eb8d754-2dc8-49b9-ae91-afcecdfb3d17.png)
-Simple chat coded by me.
+
 
 Note: You want to have own hosting with php support, database (phpmysql). And ypu want to get imgur api key(https://api.imgur.com/oauth2/addclient).
 
