@@ -15,3 +15,5 @@ Note: You want to have own hosting with php support, database (phpmysql). And yp
 7. Enter here your host, room folder and imgur apikey 
 ![изображение](https://user-images.githubusercontent.com/66429886/135592399-f81c0e98-cb87-4cef-a101-b8e649532967.png)
 8. Done!
+
+The project is closed, thanks all for support :(
