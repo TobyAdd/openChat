@@ -7,7 +7,7 @@ uses
   Dialogs, WinInet, StdCtrls, ShellAPI, ExtCtrls, IdIOHandler,
   IdIOHandlerSocket, IdSSLOpenSSL, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdHTTP, IdMultipartFormData, OleCtrls,
-  SHDocVw, MD5, ClipBrd;
+  SHDocVw, MD5, ClipBrd, Buttons, pngimage, Registry;
 
 type
   TMain = class(TForm)
@@ -43,6 +43,16 @@ type
     CreateHiddenRoomBtn: TButton;
     Label5: TLabel;
     HiddenRoomKeyEdt: TEdit;
+    SmilesPanel: TPanel;
+    Image1: TImage;
+    Image2: TImage;
+    Image3: TImage;
+    Image4: TImage;
+    Image5: TImage;
+    Image6: TImage;
+    Image7: TImage;
+    Image8: TImage;
+    SpeedButton1: TSpeedButton;
     procedure SendBtnClick(Sender: TObject);
     procedure TextEdtKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
@@ -59,6 +69,16 @@ type
     procedure Button2Click(Sender: TObject);
     procedure WebViewWrite(Str: string);
     procedure CreateHiddenRoomBtnClick(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure Image1Click(Sender: TObject);
+    procedure Image2Click(Sender: TObject);
+    procedure Image3Click(Sender: TObject);
+    procedure Image4Click(Sender: TObject);
+    procedure Image5Click(Sender: TObject);
+    procedure Image6Click(Sender: TObject);
+    procedure Image7Click(Sender: TObject);
+    procedure Image8Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     { Private declarations }
   public
@@ -71,7 +91,7 @@ var
 const
   ChatHost = 'http://localhost';
   RoomsFolder = 'rooms';
-  IMGUrKey='d00000000000000';
+  IMGUrKey='d00000000000';
 
 implementation
 
@@ -222,6 +242,8 @@ procedure TMain.TextEdtKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = 13 then
     SendBtn.Click;
+  if Key = VK_MENU then
+    Key:=0;
 end;
 
 procedure TMain.UpdateChatBtnClick(Sender: TObject);
@@ -249,7 +271,17 @@ begin
 end;
 
 procedure TMain.FormCreate(Sender: TObject);
+var
+  Reg: TRegistry;
 begin
+  Reg:=TRegistry.Create;
+  Reg.RootKey:=HKEY_CURRENT_USER;
+  if Reg.OpenKey('\Software\openChat\Settings', false) then begin
+    NickEdt.Text:=Reg.ReadString('User');
+    PassEdt.Text:=Reg.ReadString('Password');
+    Reg.CloseKey;
+  end;
+  Reg.Free;
   Application.Title:=Caption;
   IdHttp.Request.CustomHeaders.Add('Authorization:Client-ID ' + IMGUrKey);
   WebBrowser1.Navigate('about:blank');
@@ -344,7 +376,7 @@ begin
     Delete(Source, 1, Pos('<link>', Source) + 5);
     Delete(Source, Pos('<', Source), Length(Source) - Pos('<', Source) + 1);
     ShowMessage('Uploaded');
-    TextEdt.Text:='<br><img src="' + Source + '" />';
+    TextEdt.Text:='<br><img style="max-width:40%" src="' + Source + '" />';
     SendBtn.Click;
   end else
     ShowMessage('Fail upload');
@@ -357,6 +389,16 @@ begin
   Str:=StringReplace(Str, '&lt;', '<', [rfReplaceAll]);
   Str:=StringReplace(Str, '&gt;', '>', [rfReplaceAll]);
   Str:=StringReplace(Str, '&quot;', '"', [rfReplaceAll]);
+
+  Str:=StringReplace(Str, ' :)', '<img src="https://i.imgur.com/7oycp5t.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' :(', '<img src="https://i.imgur.com/JZ7URCW.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' ;)', '<img src="https://i.imgur.com/Smm603o.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' !cool', '<img src="https://i.imgur.com/BYscgmz.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' !xd', '<img src="https://i.imgur.com/aPwzyG1.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' !shyness', '<img src="https://i.imgur.com/0504r8f.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' !what', '<img src="https://i.imgur.com/Aw1ze5f.gif" />', [rfReplaceAll]);
+  Str:=StringReplace(Str, ' !thumbup', '<img src="https://i.imgur.com/s670OdI.gif" />', [rfReplaceAll]);
+
   WebBrowser1.Refresh;
   WebBrowser1.OleObject.Document.Write('<html><body>' + UTF8ToAnsi(Str) + ' </body></html>');
 end;
@@ -371,6 +413,73 @@ begin
   ShowMessage('Key copied to the clipboard');
   HTTPGet(ChatHost + '/chatapi.php?a=hidden&r=' + URLEncode(Str));
   UpdateRoomsBtn.Click;
+end;
+
+procedure TMain.SpeedButton1Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=not SmilesPanel.Visible;
+end;
+
+procedure TMain.Image1Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' :)';
+end;
+
+procedure TMain.Image2Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' :(';
+end;
+
+procedure TMain.Image3Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' ;)';
+end;
+
+procedure TMain.Image4Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' !cool';
+end;
+
+procedure TMain.Image5Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' !xd';
+end;
+
+procedure TMain.Image6Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' !shyness';
+end;
+
+procedure TMain.Image7Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' !what';
+end;
+
+procedure TMain.Image8Click(Sender: TObject);
+begin
+  SmilesPanel.Visible:=false;
+  TextEdt.Text:=TextEdt.Text + ' !thumbup';
+end;
+
+procedure TMain.FormClose(Sender: TObject; var Action: TCloseAction);
+var
+  Reg: TRegistry;
+begin
+  Reg:=TRegistry.Create;
+  Reg.RootKey:=HKEY_CURRENT_USER;
+  if Reg.OpenKey('\Software\openChat\Settings', true) then begin
+    Reg.WriteString('User', NickEdt.Text);
+    Reg.WriteString('Password', PassEdt.Text);
+    Reg.CloseKey;
+  end;
+  Reg.Free;
 end;
 
 end.
